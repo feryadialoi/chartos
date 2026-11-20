@@ -40,12 +40,16 @@ The dashboard uid is the part of the Grafana URL after `/d/`: `https://grafana.e
 ## How to use it as an agent
 
 1. Find the panel: `chartos panels <uid>`. Pick the id by title and type.
-2. For a reading you can capture, always pass `--once`. The live view takes over the terminal and waits for `q`, so it hangs a non-interactive shell.
-3. For the user to watch, run the live view in a separate terminal pane (in Rex, a pane with `--keep-open`), never in your own foreground shell.
+2. chartos needs a real terminal. Every draw, `--once` included, fails with `chartos draws to a terminal; stdout is not one` when stdout is a pipe or a non-interactive agent shell.
+3. Run it in a separate terminal pane and read that pane's screen. In Rex, open a pane beside your own, then capture it:
 
 ```sh
-chartos --token-file ~/.grafana-token panel abc123 5 --once --from now-1h
+rex split -s "$REX_SESSION" -b "$REX_BLOCK" --focus=false --keep-open --label chartos \
+  -- chartos --token-file ~/.grafana-token panel abc123 5 --refresh 5s
+rex capture -b <new block id>
 ```
+
+The live view waits for `q`, so never run it in your own foreground shell. Use `--once` only in a pane the user is looking at, when one frame is enough.
 
 Read the footer of histogram panels for the numbers: `n=17k ▲ p50 149ms ▲ p95 2.05s ▲ p99 4.27s`. Report those values exactly; do not estimate from bar heights.
 
