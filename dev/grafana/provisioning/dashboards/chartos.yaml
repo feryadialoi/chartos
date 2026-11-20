@@ -1,0 +1,7 @@
+apiVersion: 1
+providers:
+  - name: chartos
+    folder: ChartOS
+    type: file
+    options:
+      path: /var/lib/grafana/dashboards
